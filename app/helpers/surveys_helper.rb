@@ -42,6 +42,14 @@ module SurveysHelper
       :label_method => label_method
   end
 
+  def chart_columns(parameter)
+    if parameter.to_sym == :n
+      [0, 1, 2, 3, 4, '5-9', '10-99', '100-999', '1000-9999', '10000+']
+    else
+      Survey.options_for(parameter).map &:quotient_label
+    end
+  end
+
   # def chart_colors(parameter)
   #   num_values = case parameter
   #   when 'n'

@@ -1,3 +1,14 @@
 
 Crowdsourcing the Drake Equation
 
+
+Interview exercise notes
+========================
+
+To install old versions of things to get this app running:
+
+rvm install ruby 1.8.7
+rvm rubygems 1.3.5
+gem install rake -v 0.8.7
+gem install rails -v 2.3.5
+gem install RedCloth -v 4.2.2
