@@ -42,17 +42,48 @@ module SurveysHelper
       :label_method => label_method
   end
 
+  N_COLS = ['0', '1', '2', '3', '4', '5-9', '10-99', '100-999', '1000-9999', '10000+']
+
   def chart_columns(parameter)
     if parameter.to_sym == :n
-      cols = [0, 1, 2, 3, 4, '5-9', '10-99', '100-999', '1000-9999', '10000+']
+      cols = N_COLS
     else
       cols = Survey.options_for(parameter).map &:quotient_label
     end
     cols.to_json
   end
 
-  def chart_data(parameter, dimension)
-    data = [4, 7, 10, 7]
+  def chart_data(param, dim)
+    case dim
+    when :age
+      surveys = Survey.all(:group => "#{param}, age_groups.description",
+                           :joins => :age_group,
+                           :select => "#{param}, age_groups.description, count(*) as c")
+      surveys = surveys.select {|s| s.description == '26-35'}
+    when :gender
+      surveys = Survey.all(:group => "#{param}, gender",
+                           :select => "#{param}, gender, count(*) as c")
+      surveys = surveys.select {|s| s.gender == 'Male'}
+    when :all
+      surveys = Survey.all(:group => param, :select => "#{param}, count(*) as c")
+    end
+    if param.to_sym == :n
+      data = N_COLS.map do |col|
+        range = col.split('-').map &:to_i
+        if range.size == 1
+          if col.ends_with? '+'
+            bucket = surveys.select {|s| s.n >= range[0]}
+          else
+            bucket = surveys.select {|s| s.n == range[0]}
+          end
+        else
+          bucket = surveys.select {|s| s.n >= range[0] && s.n <= range[1]}
+        end
+        bucket.sum &:c
+      end
+    else
+      data = surveys.map &:c
+    end
     data.to_json
   end
 

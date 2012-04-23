@@ -33,6 +33,9 @@
 </div>
 
 <script>
+// group: id of the element to render to
+// title: chart title
+// data: array of counts per column
 function makeChart(group, title, data) {
   return new Highcharts.Chart({
     chart: {
@@ -72,13 +75,14 @@ function makeChart(group, title, data) {
   });
 }
 
+var age_data = <%= chart_data(param, :age) %>;
+var gender_data = <%= chart_data(param, :gender) %>;
+var all_data = <%= chart_data(param, :all) %>;
+
 $(document).ready(function() {
-  makeChart('ages-group', 'Estimates by age group 26-35',
-            <%= chart_data(param, :age) %>);
-  makeChart('gender-group', 'Estimates by males',
-            <%= chart_data(param, :gender) %>);
-  makeChart('all', 'All Estimates',
-            <%= chart_data(param, :all) %>);
+  makeChart('ages-group', 'Estimates by age group 26-35', age_data);
+  makeChart('gender-group', 'Estimates by males', gender_data);
+  makeChart('all', 'All Estimates', all_data);
 });
 
 </script>
