@@ -18,24 +18,6 @@
 	
   <div id="ages-group" style="width: 650px; height: 300px;"></div>
 
-  <table id="data-ages-group" style="display:none;">
-    <caption>Estimates by age group 26-35</caption>
-    <thead>
-      <tr>
-        <th>Value</th>
-        <th>Count</th>
-      </tr>
-    </thead>
-    <tbody>
-      <%- chart_columns(param).each do |col| -%>
-      <tr>
-        <th><%= col %></th>
-        <td>1234</td>
-      </tr>
-      <%- end -%>
-    </tbody>
-  </table>
-
   <label>Show gender:</label>
   <select>
     <option disabled="disabled">Choose:</option>
@@ -46,44 +28,12 @@
 
   <div id="gender-group" style="width: 650px; height: 300px;"></div>
 
-  <table id="data-gender-group" style="display:none;">
-    <caption>Estimates for age 26-35</caption>
-    <thead>
-      <tr>
-        <th>Value</th>
-        <th>Count</th>
-      </tr>
-    </thead>
-    <tbody>
-      <%- chart_columns(param).each do |col| -%>
-      <tr>
-        <th><%= col %></th>
-        <td>1234</td>
-      </tr>
-      <%- end -%>
-    </tbody>
-  </table>
-
   <div id="all" style="width: 650px; height: 300px;"></div>
-
-  <table id="data-all" style="display:none;">
-    <caption>All Estimates</caption>
-    <tbody>
-      <%- chart_columns(param).each do |col| -%>
-      <tr>
-        <th><%= col %></th>
-        <td>1234</td>
-      </tr>
-      <%- end -%>
-    </tbody>
-  </table>
 
 </div>
 
 <script>
-var categories = [ '<%= chart_columns(param).join("', '") %>' ];
-
-function makeChart(group, title) {
+function makeChart(group, title, data) {
   return new Highcharts.Chart({
     chart: {
       renderTo: group,
@@ -93,7 +43,7 @@ function makeChart(group, title) {
       text: title
     },
     xAxis: {
-      categories: categories
+      categories: <%= chart_columns(param) %>
     },
     yAxis: {
       title: {
@@ -107,28 +57,7 @@ function makeChart(group, title) {
     },
     plotOptions: {
       column: {
-	data: 'data-' + group,
-	// define a custom data parser function for both series
-	dataParser: function(data) {
-	  var table = document.getElementById(data),
-	  // get the data rows from the tbody element
-	  rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr'),
-	  // define the array to hold the real data
-	  result = [], 
-	  // decide which column to use for this series
-	  column = { 'Count': 0 }[this.options.name];
-	  
-	  // loop through the rows and get the data depending on the series (this) name
-	  for (var i = 0; i < rows.length; i++) {						
-	    result.push(
-	      parseInt(
-		rows[i].getElementsByTagName('td')[column]. // the data cell
-		innerHTML
-	      )
-	    );
-	  }
-	  return result;
-	}
+	data: data
       }
     },
     credits: {
@@ -144,9 +73,12 @@ function makeChart(group, title) {
 }
 
 $(document).ready(function() {
-  makeChart('ages-group', 'Estimates by age group 26-35');
-  makeChart('gender-group', 'Estimates by males');
-  makeChart('all', 'All Estimates');
+  makeChart('ages-group', 'Estimates by age group 26-35',
+            <%= chart_data(param, :age) %>);
+  makeChart('gender-group', 'Estimates by males',
+            <%= chart_data(param, :gender) %>);
+  makeChart('all', 'All Estimates',
+            <%= chart_data(param, :all) %>);
 });
 
 </script>

@@ -44,10 +44,16 @@ module SurveysHelper
 
   def chart_columns(parameter)
     if parameter.to_sym == :n
-      [0, 1, 2, 3, 4, '5-9', '10-99', '100-999', '1000-9999', '10000+']
+      cols = [0, 1, 2, 3, 4, '5-9', '10-99', '100-999', '1000-9999', '10000+']
     else
-      Survey.options_for(parameter).map &:quotient_label
+      cols = Survey.options_for(parameter).map &:quotient_label
     end
+    cols.to_json
+  end
+
+  def chart_data(parameter, dimension)
+    data = [4, 7, 10, 7]
+    data.to_json
   end
 
   # def chart_colors(parameter)
