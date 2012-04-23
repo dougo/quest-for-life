@@ -80,9 +80,9 @@ var gender_data = <%= chart_data(param, :gender) %>;
 var all_data = <%= chart_data(param, :all) %>;
 
 $(document).ready(function() {
-  makeChart('ages-group', 'Estimates by age group 26-35', age_data);
-  makeChart('gender-group', 'Estimates by males', gender_data);
-  makeChart('all', 'All Estimates', all_data);
+  makeChart('ages-group', 'Estimates by age group 26-35', age_data['26-35']);
+  makeChart('gender-group', 'Estimates by males', gender_data['Male']);
+  makeChart('all', 'All Estimates', all_data['All']);
 });
 
 </script>

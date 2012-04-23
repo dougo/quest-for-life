@@ -54,35 +54,44 @@ module SurveysHelper
   end
 
   def chart_data(param, dim)
+    data = {}
     case dim
     when :age
-      surveys = Survey.all(:group => "#{param}, age_groups.description",
+      surveys = Survey.all(:group => param + ', age_groups.description',
                            :joins => :age_group,
-                           :select => "#{param}, age_groups.description, count(*) as c")
-      surveys = surveys.select {|s| s.description == '26-35'}
+                           :select => param +
+                           ', age_groups.description as dim, count(*) as c')
+      dimvals = AgeGroup.all.map &:description
     when :gender
-      surveys = Survey.all(:group => "#{param}, gender",
-                           :select => "#{param}, gender, count(*) as c")
-      surveys = surveys.select {|s| s.gender == 'Male'}
+      surveys = Survey.all(:group => param + ', gender',
+                           :select => param +
+                           ', gender as dim, count(*) as c')
+      dimvals = ['Male', 'Female', nil]
     when :all
-      surveys = Survey.all(:group => param, :select => "#{param}, count(*) as c")
+      surveys = Survey.all(:group => param,
+                           :select => param +
+                           ", 'All' as dim, count(*) as c")
+      dimvals = ['All']
     end
-    if param.to_sym == :n
-      data = N_COLS.map do |col|
-        range = col.split('-').map &:to_i
-        if range.size == 1
-          if col.ends_with? '+'
-            bucket = surveys.select {|s| s.n >= range[0]}
+    dimvals.each do |dimval|
+      dim_surveys = surveys.select {|s| s.dim == dimval}
+      if param.to_sym == :n
+        data[dimval] = N_COLS.map do |col|
+          range = col.split('-').map &:to_i
+          if range.size == 1
+            if col.ends_with? '+'
+              bucket = dim_surveys.select {|s| s.n >= range[0]}
+            else
+              bucket = dim_surveys.select {|s| s.n == range[0]}
+            end
           else
-            bucket = surveys.select {|s| s.n == range[0]}
+            bucket = dim_surveys.select {|s| s.n >= range[0] && s.n <= range[1]}
           end
-        else
-          bucket = surveys.select {|s| s.n >= range[0] && s.n <= range[1]}
+          bucket.sum &:c
         end
-        bucket.sum &:c
+      else
+        data[dimval] = dim_surveys.map &:c
       end
-    else
-      data = surveys.map &:c
     end
     data.to_json
   end
