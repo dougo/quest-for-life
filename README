@@ -5,6 +5,11 @@ Crowdsourcing the Drake Equation
 Interview exercise notes
 ========================
 
+Files changed:
+  app/helpers/surveys_helper.rb
+  app/views/surveys/_parameter_results.html.erb
+
+
 To install old versions of things to get this app running:
 
 rvm install ruby 1.8.7
@@ -28,9 +33,28 @@ Probably should consult a graphic designer and/or a data visualization
 expert.  :)
 
 I didn't do the extra credit: I'm not sure how to make tests for
-Javascript behavior (capybara? haven't looked into it).  I didn't have
-time to do highlighting of the user's parameter values.
+Javascript behavior (capybara? haven't looked into it).  (Although it
+just occurred to me that I could write unit tests for the surveys
+helper.)  I didn't have time to do highlighting of the user's
+parameter values.
 
 Overall (not counting time spent figuring out what old versions of
 things to install), this exercise took me about 6-7 hours, spread
 across 3 hacking sessions.
+
+
+Potential cleanup tasks:
+
+Write a migration to clean up the data, e.g. change the age group
+description '26-35' to '26 - 35' to match the others, and change the
+null genders to 'Unknown'.
+
+Add :order clauses to the queries (currently they rely on the fact
+that the age groups and rational options are in the correct order in
+the db).
+
+Refactor chart_data to be a little cleaner/more efficient.
+
+Put Javascript code into public/javascript.
+
+Convert to Rails 3...
