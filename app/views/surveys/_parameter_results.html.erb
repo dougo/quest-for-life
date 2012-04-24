@@ -4,22 +4,19 @@
   <h3><%= Survey.question_for_parameter(param) %></h3>
 	
   <label>Show age:</label>
-  <select>
+  <select id='age_select' onchange='makeAgeChart()'>
     <option disabled="disabled">Choose:</option>
-    <option>11 and under</option>
-    <option>12-14</option>
-    <option>15-18</option>
-    <option>19-25</option>
-    <option selected="selected">26-35</option>
-    <option>36-50</option>
-    <option>50+</option>
-    <option>Unknown</option>
+    <%- AgeGroup.all.each do |g| -%>
+      <option<%= ' selected="selected"' if g.description == '26-35' %>>
+        <%= g.description %>
+      </option>
+    <%- end -%>
   </select>
 	
   <div id="ages-group" style="width: 650px; height: 300px;"></div>
 
   <label>Show gender:</label>
-  <select>
+  <select id='gender_select' onchange='makeGenderChart()'>
     <option disabled="disabled">Choose:</option>
     <option selected="selected">Male</option>
     <option>Female</option>
@@ -75,13 +72,27 @@ function makeChart(group, title, data) {
   });
 }
 
+function makeAgeChart() {
+  var ages = $('#age_select').val();
+  makeChart('ages-group', 'Estimates by age group ' + ages, age_data[ages]);
+}
+
+function makeGenderChart() {
+  var gender = $('#gender_select').val();
+  var group = (gender == 'Male' ? 'males' :
+               gender == 'Female' ? 'females' :
+               'unknown gender');
+  if (gender == 'Unknown') gender = '';
+  makeChart('gender-group', 'Estimates by ' + group, gender_data[gender]);
+}
+
 var age_data = <%= chart_data(param, :age) %>;
 var gender_data = <%= chart_data(param, :gender) %>;
 var all_data = <%= chart_data(param, :all) %>;
 
 $(document).ready(function() {
-  makeChart('ages-group', 'Estimates by age group 26-35', age_data['26-35']);
-  makeChart('gender-group', 'Estimates by males', gender_data['Male']);
+  makeAgeChart();
+  makeGenderChart();
   makeChart('all', 'All Estimates', all_data['All']);
 });
 

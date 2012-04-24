@@ -12,3 +12,25 @@ rvm rubygems 1.3.5
 gem install rake -v 0.8.7
 gem install rails -v 2.3.5
 gem install RedCloth -v 4.2.2
+
+I replaced the HTML tables with plain JSON hashes to hold the chart
+data.  The tables were hidden anyway, so it didn't seem like they were
+intended to be there for, say, browsers with Javascript turned off.
+
+I wasn't sure what column values to use for N.  I somewhat arbitrarily
+chose 0, 1, 2, 3, 4, and then buckets for 5-9, 10-99, 100-999,
+1000-9999, 10000+.
+
+Some of the longer column labels overlap each other, e.g. "1 in
+1,000,000".  Perhaps these could be combined into buckets also, or
+else just stagger the labels vertically so they don't overlap.
+Probably should consult a graphic designer and/or a data visualization
+expert.  :)
+
+I didn't do the extra credit: I'm not sure how to make tests for
+Javascript behavior (capybara? haven't looked into it).  I didn't have
+time to do highlighting of the user's parameter values.
+
+Overall (not counting time spent figuring out what old versions of
+things to install), this exercise took me about 6-7 hours, spread
+across 3 hacking sessions.
